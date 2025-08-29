@@ -408,7 +408,7 @@ import axios from 'axios';
 import CYNLoader from "../app/components/Loader"
 
 // Define a base URL for your API for easier management
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 // ✅ NEW: Loader for the very first time the site is visited
 // This component simulates a system boot-up to match your site's theme.
@@ -707,8 +707,8 @@ const Home = () => {
                                     />
                                 </div>
                                 <div>
-                                    <h1 className="text-xl font-bold text-[#e0e0e0]">CYN<span className="inline-block w-2 h-5 bg-[#00ff41] ml-1 animate-pulse"></span></h1>
-                                    <p className="text-xs text-[#666666]">Secure Government Network • Clearance Level: ALPHA</p>
+                                    <h1 className="text-xl font-bold text-[#e0e0e0]">CYN</h1>
+                                  
                                 </div>
                             </div>
                             <div className="flex items-center space-x-2 text-sm">
@@ -739,7 +739,7 @@ const Home = () => {
                     <Link href={`/telegramBot`} >
                         <button onClick={() => console.log("Bot Analysis Clicked")} className="group bg-gradient-to-r from-[#00A8FF] to-[#007BFF] text-white font-bold py-4 px-6 rounded-2xl shadow-2xl shadow-[#00A8FF]/30 transition-all duration-300 transform hover:scale-105 hover:shadow-[#00A8FF]/50 flex items-center space-x-3">
                             <Bot className="w-6 h-6 group-hover:animate-pulse" />
-                            <span>USE_BOT_ANALYSIS</span>
+                            <span>CYN_BOT_ANALYSIS</span>
                         </button>
                     </Link>
                     <button onClick={() => setIsFormModalOpen(true)} className="group bg-gradient-to-r from-[#00ff41] to-[#4caf50] text-black font-bold py-4 px-6 rounded-2xl shadow-2xl shadow-[#00ff41]/30 transition-all duration-300 transform hover:scale-105 hover:shadow-[#00ff41]/50 flex items-center space-x-3">

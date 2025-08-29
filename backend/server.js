@@ -6,7 +6,7 @@ const cors = require("cors");
 const main=require("../backend/config/DB");
 require("dotenv").config();
 const Prediction = require("./model/Data");
-
+const axios=require("axios")
 
 const app = express();
 
@@ -409,7 +409,30 @@ app.delete("/deleteGroup/:groupToDelete", async (req, res) => {
   }
 });
 
+//PROXY-SERVER
+app.get('/api/ip-info/:ip', async (req, res) => {
+  console.log("hii")
+  const { ip } = req.params;
+  const IPINFO_TOKEN = process.env.IPINFO_TOKEN;
 
+  if (!ip) {
+    return res.status(400).json({ error: 'IP address is required' });
+  }
+
+  try {
+    console.log(`Fetching info for IP: ${ip}`);
+    
+    // The backend makes the secure call to ipinfo.io
+    const response = await axios.get(`https://ipinfo.io/${ip}`);
+    
+    // Send the data from ipinfo.io back to your frontend
+    res.json(response.data);
+
+  } catch (error) {
+    console.error('Error fetching from ipinfo.io:', error.message);
+    res.status(500).json({ error: 'Failed to fetch IP information.' });
+  }
+});
 
 
 // ---------------------

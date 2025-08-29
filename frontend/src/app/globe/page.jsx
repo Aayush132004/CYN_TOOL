@@ -4,6 +4,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useSearchParams } from 'next/navigation';
+import axios from 'axios'; // Import axios
+
+// ✅ Create a pre-configured axios instance with the base URL
+const apiClient = axios.create({
+  baseURL: 'http://localhost:5000',
+});
 
 const IPLocatorPage = () => {
   const mountRef = useRef(null);
@@ -37,6 +43,8 @@ const IPLocatorPage = () => {
     };
 
     const animateCameraToTarget = (lat, lng, onComplete) => {
+      if (!controls || !camera) return;
+      
       const targetPos = latLongToVector3(lat, lng, 20);
       const startPos = camera.position.clone();
       const duration = 2000;
@@ -58,27 +66,21 @@ const IPLocatorPage = () => {
       animationFrameId = requestAnimationFrame(step);
     };
     
-    // ✅ FIXED: Properly calculate pin position based on Earth's rotation
     const updatePinPosition = () => {
         if (!isMarkerCurrentlyPinned || !camera || !mountRef.current || !earth) return;
         const pin = document.getElementById('location-pin');
         if (!pin) return;
         
-        // Calculate the pin's position based on its lat/lng and Earth's current rotation
         const position = latLongToVector3(markerLat, markerLng, 10);
         
-        // Create a quaternion representing Earth's rotation
         const earthQuaternion = new THREE.Quaternion();
         earth.getWorldQuaternion(earthQuaternion);
         
-        // Apply Earth's rotation to the pin position
         position.applyQuaternion(earthQuaternion);
         markerPosition.copy(position);
         
-        // Project the 3D position to 2D screen coordinates
         const projected = position.clone().project(camera);
         
-        // Check if the pin is on the visible side of the Earth
         const cameraToPin = new THREE.Vector3().subVectors(position, camera.position).normalize();
         const cameraToEarthCenter = new THREE.Vector3().subVectors(new THREE.Vector3(0, 0, 0), camera.position).normalize();
         const dotProduct = cameraToPin.dot(cameraToEarthCenter);
@@ -104,12 +106,20 @@ const IPLocatorPage = () => {
       setIsLoading(true);
       setError('');
       setIpInfo(null);
+      isMarkerCurrentlyPinned = false;
 
       try {
-        const response = await fetch(`https://ipinfo.io/${ip}/json`); // Remember to add your token
-        if (!response.ok) throw new Error(`API error: ${response.statusText}`);
-        const data = await response.json();
-        if (data.bogon) throw new Error('This is a private or reserved IP.');
+        // ✅ CHANGED: Using axios instance to make the API call.
+        const response = await apiClient.get(`/api/ip-info/${ip}`);
+        const data = response.data; // With axios, the data is directly on the .data property
+
+        if (data.bogon) {
+            throw new Error('This is a private or reserved IP address.');
+        }
+
+        if (!data.loc) {
+            throw new Error('Location data not available for this IP.');
+        }
 
         const [lat, lng] = data.loc.split(',').map(Number);
         markerLat = lat;
@@ -125,7 +135,12 @@ const IPLocatorPage = () => {
         });
 
       } catch (err) {
-        setError(err.message);
+        // Axios provides more detailed error info
+        const message = err.response?.data?.error || err.message;
+        setError(message);
+        setIsPinned(false);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -135,7 +150,7 @@ const IPLocatorPage = () => {
       setIpInfo(null);
       const pin = document.getElementById('location-pin');
       if (pin) pin.style.display = 'none';
-      animateCameraToTarget(0, 0, null);
+      animateCameraToTarget(20, 0, null);
     };
 
     mountRef.current.resetGlobe = resetGlobe;
@@ -163,8 +178,6 @@ const IPLocatorPage = () => {
         loadTexture('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg'),
         loadTexture('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png')
       ]).then(([earthTexture, specularTexture, cloudsTexture]) => {
-        setIsLoading(false);
-
         const earthGeometry = new THREE.SphereGeometry(10, 64, 64);
         const earthMaterial = new THREE.MeshPhongMaterial({ map: earthTexture, specularMap: specularTexture, shininess: 5 });
         earth = new THREE.Mesh(earthGeometry, earthMaterial);
@@ -200,6 +213,7 @@ const IPLocatorPage = () => {
           updatePinPosition();
         };
         animate();
+        searchIp(ipFromParams || '8.8.8.8');
       });
 
       const handleResize = () => {
@@ -213,14 +227,17 @@ const IPLocatorPage = () => {
     };
 
     init();
-    searchIp(ipFromParams || '8.8.8.8');
+    
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (mountRef.current && renderer.domElement) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
     };
   }, [ipFromParams]);
 
   const handleResetClick = () => mountRef.current?.resetGlobe();
-  const openGoogleMaps = () => ipInfo && window.open(`https://www.google.com/maps?q=${ipInfo.lat},${ipInfo.lng}`, '_blank');
+  const openGoogleMaps = () => ipInfo && window.open(`http://maps.google.com/maps?q=${ipInfo.lat},${ipInfo.lng}`, '_blank');
 
   return (
     <>
@@ -245,7 +262,7 @@ const IPLocatorPage = () => {
           <button onClick={openGoogleMaps} className="maps-btn">Open in Google Maps</button>
         </div>
       )}
-      {isPinned && <button onClick={handleResetClick} className="reset-btn">Reset</button>}
+   
       
       <style jsx global>{`
         body { overflow: hidden; background: #000; color: white; }

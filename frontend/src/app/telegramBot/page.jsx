@@ -5,7 +5,7 @@ import { Clock, Bot, Play, Square, Terminal, ArrowLeft, Shield } from 'lucide-re
 import io from 'socket.io-client';
 
 // Define the hosted backend URL
-const API_BASE_URL = "http://localhost:3001";
+const API_BASE_URL = process.env.NEXT_PUBLIC_BOT_SERVER;
 
 // Full-screen loader component
 const FullScreenLoader = () => (
@@ -224,8 +224,8 @@ const TelegramBot = () => {
                                     />
                                 </div>
                                 <div>
-                                    <h1 className="text-xl font-bold text-[#e0e0e0]">CYN<span className="inline-block w-2 h-5 bg-[#00ff41] ml-1 animate-pulse"></span></h1>
-                                    <p className="text-xs text-[#666666]">Secure Government Network • Clearance Level: ALPHA</p>
+                                    <h1 className="text-xl font-bold text-[#e0e0e0]">CYN</h1>
+                                 
                                 </div>
                             </div>
                             <div className="flex items-center space-x-2 text-sm">
@@ -240,7 +240,7 @@ const TelegramBot = () => {
                         <div className="flex items-center space-x-4 mb-8">
                             <Bot className="w-12 h-12 text-[#00ff41]" />
                             <div>
-                                <h2 className="text-3xl font-bold text-[#e0e0e0]">TELEGRAM_BOT_ANALYSIS</h2>
+                                <h2 className="text-3xl font-bold text-[#e0e0e0]">CYN_BOT_ANALYSIS</h2>
                                 <p className="text-[#888888]">Monitor live activity of Telegram bot processes and analysis systems</p>
                             </div>
                         </div>
