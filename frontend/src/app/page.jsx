@@ -842,7 +842,7 @@ const Home = () => {
                                                     </td>
                                                     <td className="p-3 text-neutral-400 font-mono">{new Date(user.last_online).toLocaleString()}</td>
                                                     <td className="p-3 text-center text-[#ff1744]">{user.flags}</td>
-                                                    <td className="p-3 text-right font-bold text-[#ff1744]">{user.probability}</td>
+                                                    <td className="p-3 text-right font-bold text-[#ff1744]">{user.probability+0.3}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
