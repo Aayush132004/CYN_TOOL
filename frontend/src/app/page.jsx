@@ -756,7 +756,7 @@ const Home = () => {
                     <form onSubmit={handleSubmit} className="p-6 space-y-6">
                         <div>
                             <label htmlFor="groupName" className="block text-sm font-semibold text-[#00ff41] mb-2">GROUP_IDENTIFIER</label>
-                            <input type="text" id="groupName" name="groupName" value={formData.groupName} onChange={handleInputChange} required className="w-full bg-black/50 border-2 border-[#1a1a1a] rounded-xl px-4 py-3 text-[#e0e0e0] focus:outline-none focus:border-[#00ff41] transition-colors" placeholder="THREAT_ANALYSIS_BETA" />
+                            <input type="text" id="groupName" name="groupName" value={formData.groupName} onChange={handleInputChange} required className="w-full bg-black/50 border-2 border-[#1a1a1a] rounded-xl px-4 py-3 text-[#e0e0e0] focus:outline-none focus:border-[#00ff41] transition-colors" placeholder="Enter Group Name" />
                         </div>
                         <div>
                             <label htmlFor="metadataFile" className="block text-sm font-semibold text-[#00ff41] mb-2">METADATA_UPLOAD</label>

@@ -5,7 +5,7 @@ import { Clock, Bot, Play, Square, Terminal, ArrowLeft, Shield } from 'lucide-re
 import io from 'socket.io-client';
 
 // Define the hosted backend URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_BOT_SERVER;
+const API_BASE_URL = process.env.BOT_SERVER;
 
 // Full-screen loader component
 const FullScreenLoader = () => (
@@ -57,7 +57,7 @@ const LogPanel = ({ title, logContent, status, onStart, onStop, icon: Icon, show
                                 type="text"
                                 value={inputValue}
                                 onChange={onInputChange}
-                                placeholder="e.g., @user1, @user2"
+                                placeholder="e.g., @drugsellertest_bot"
                                 className="bg-black/50 text-white rounded-lg px-4 py-2 border border-[#333] focus:outline-none focus:border-[#00ff41] w-80 h-10 text-sm"
                             />
                         )}
